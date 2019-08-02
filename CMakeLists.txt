@@ -18,6 +18,7 @@ cmake_minimum_required(VERSION 2.6.2)
 set(CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS TRUE)
 cmake_policy(SET CMP0003 NEW)
 
+add_compile_options(-DBOOST_USE_WINDOWS_H)
 add_compile_options(-Wno-attributes)
 add_compile_options(-Wno-deprecated)
 add_compile_options(-Wno-narrowing)
@@ -56,9 +57,9 @@ endif ()
 project(OGRE)
 
 # Include necessary submodules
-set(CMAKE_MODULE_PATH 
+set(CMAKE_MODULE_PATH
   "${OGRE_SOURCE_DIR}/CMake"
-  "${OGRE_SOURCE_DIR}/CMake/Utils" 
+  "${OGRE_SOURCE_DIR}/CMake/Utils"
   "${OGRE_SOURCE_DIR}/CMake/Packages"
 )
 include(CMakeDependentOption)
@@ -133,13 +134,13 @@ if (CMAKE_COMPILER_IS_GNUCXX AND NOT MINGW)
   check_cxx_compiler_flag(-fvisibility=hidden OGRE_GCC_VISIBILITY)
   if (OGRE_GCC_VISIBILITY)
     # determine gcc version
-    execute_process(COMMAND ${CMAKE_CXX_COMPILER} -dumpversion 
+    execute_process(COMMAND ${CMAKE_CXX_COMPILER} -dumpversion
       OUTPUT_VARIABLE OGRE_GCC_VERSION)
     message(STATUS "Detected g++ ${OGRE_GCC_VERSION}")
     message(STATUS "Enabling GCC visibility flags")
     set(OGRE_GCC_VISIBILITY_FLAGS "-DOGRE_GCC_VISIBILITY -fvisibility=hidden")
     set(XCODE_ATTRIBUTE_GCC_SYMBOLS_PRIVATE_EXTERN "YES")
-  
+
     # check if we can safely add -fvisibility-inlines-hidden
     string(TOLOWER "${CMAKE_BUILD_TYPE}" OGRE_BUILD_TYPE)
     if (OGRE_BUILD_TYPE STREQUAL "debug" AND OGRE_GCC_VERSION VERSION_LESS "4.2")
@@ -149,11 +150,11 @@ if (CMAKE_COMPILER_IS_GNUCXX AND NOT MINGW)
       set(XCODE_ATTRIBUTE_GCC_INLINES_ARE_PRIVATE_EXTERN "YES")
     endif ()
   endif (OGRE_GCC_VISIBILITY)
-  
+
   # Fix x64 issues on Linux
   if(OGRE_PLATFORM_X64 AND NOT APPLE)
     add_definitions(-fPIC)
-  endif()  
+  endif()
 endif (CMAKE_COMPILER_IS_GNUCXX AND NOT MINGW)
 
 # determine system endianess
@@ -183,7 +184,7 @@ endif (APPLE)
 # Find dependencies
 include(Dependencies)
 # definitions for samples
-set(OGRE_LIBRARIES OgreMain) 
+set(OGRE_LIBRARIES OgreMain)
 set(OGRE_Paging_LIBRARIES OgrePaging)
 set(OGRE_Terrain_LIBRARIES OgreTerrain)
 set(OGRE_Plugin_PCZSceneManager_LIBRARIES Plugin_PCZSceneManager)
@@ -227,7 +228,7 @@ elseif (APPLE AND NOT OGRE_BUILD_PLATFORM_IPHONE)
   if (NOT CMAKE_OSX_ARCHITECTURES)
     set(CMAKE_OSX_ARCHITECTURES "i386")
   endif()
-  
+
   # 10.6 sets x86_64 as the default architecture.
   # Because Carbon isn't supported on 64-bit and we still need it, force the architectures to ppc and i386
   if(CMAKE_OSX_ARCHITECTURES MATCHES "x86_64" OR CMAKE_OSX_ARCHITECTURES MATCHES "ppc64")
@@ -306,7 +307,7 @@ set(OGRE_LIB_DIRECTORY "lib${LIB_SUFFIX}" CACHE STRING "Install path for librari
 
 # hide advanced options
 mark_as_advanced(
-  OGRE_BUILD_RTSHADERSYSTEM_CORE_SHADERS 
+  OGRE_BUILD_RTSHADERSYSTEM_CORE_SHADERS
   OGRE_BUILD_RTSHADERSYSTEM_EXT_SHADERS
   OGRE_CONFIG_DOUBLE
   OGRE_CONFIG_ALLOCATOR
@@ -359,7 +360,7 @@ if (OGRE_BUILD_TESTS)
 endif ()
 
 # Setup samples
-add_subdirectory(Samples) 
+add_subdirectory(Samples)
 
 # Setup command-line tools
 if (OGRE_BUILD_TOOLS)
