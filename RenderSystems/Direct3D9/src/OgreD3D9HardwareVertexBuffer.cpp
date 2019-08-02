@@ -37,30 +37,30 @@ THE SOFTWARE.
 namespace Ogre {
 
 	//---------------------------------------------------------------------
-    D3D9HardwareVertexBuffer::D3D9HardwareVertexBuffer(HardwareBufferManagerBase* mgr, size_t vertexSize, 
-        size_t numVertices, HardwareBuffer::Usage usage, 
+    D3D9HardwareVertexBuffer::D3D9HardwareVertexBuffer(HardwareBufferManagerBase* mgr, size_t vertexSize,
+        size_t numVertices, HardwareBuffer::Usage usage,
         bool useSystemMemory, bool useShadowBuffer)
         : HardwareVertexBuffer(mgr, vertexSize, numVertices, usage, useSystemMemory, useShadowBuffer)
     {
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 
 		D3DPOOL eResourcePool;
-		       
+
 #if OGRE_D3D_MANAGE_BUFFERS
-		eResourcePool = useSystemMemory? D3DPOOL_SYSTEMMEM : 
+		eResourcePool = useSystemMemory? D3DPOOL_SYSTEMMEM :
 			// If not system mem, use managed pool UNLESS buffer is discardable
 			// if discardable, keeping the software backing is expensive
 			(usage & HardwareBuffer::HBU_DISCARDABLE)? D3DPOOL_DEFAULT : D3DPOOL_MANAGED;
 #else
 		eResourcePool = useSystemMemory? D3DPOOL_SYSTEMMEM : D3DPOOL_DEFAULT;
-#endif       		
+#endif
 
 		// Set the desired memory pool.
 		mBufferDesc.Pool = eResourcePool;
 
 		// Allocate the system memory buffer.
 		mSystemMemoryBuffer = new char [getSizeInBytes()];
-		memset(mSystemMemoryBuffer, 0, getSizeInBytes());	
+		memset(mSystemMemoryBuffer, 0, getSizeInBytes());
 
 		// Case we have to create this buffer resource on loading.
 		if (D3D9RenderSystem::getResourceManager()->getCreationPolicy() == RCP_CREATE_ON_ALL_DEVICES)
@@ -71,11 +71,11 @@ namespace Ogre {
 
 				createBuffer(d3d9Device, mBufferDesc.Pool);
 			}
-		}				
+		}
     }
 	//---------------------------------------------------------------------
     D3D9HardwareVertexBuffer::~D3D9HardwareVertexBuffer()
-    {	
+    {
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 
 		DeviceToBufferResourcesIterator it = mMapDeviceToBufferResources.begin();
@@ -85,14 +85,14 @@ namespace Ogre {
 			SAFE_RELEASE(it->second->mBuffer);
 			SAFE_DELETE(it->second);
 			++it;
-		}	
-		mMapDeviceToBufferResources.clear();   
+		}
+		mMapDeviceToBufferResources.clear();
 		SAFE_DELETE_ARRAY(mSystemMemoryBuffer);
     }
 	//---------------------------------------------------------------------
-    void* D3D9HardwareVertexBuffer::lockImpl(size_t offset, 
+    void* D3D9HardwareVertexBuffer::lockImpl(size_t offset,
         size_t length, LockOptions options)
-    {		
+    {
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 
 		if (options != HBL_READ_ONLY)
@@ -107,7 +107,7 @@ namespace Ogre {
 
 				if(bufferResources->mLockLength > 0)
 				{
-					size_t highPoint = std::max( offset + length, 
+					size_t highPoint = std::max( offset + length,
 						bufferResources->mLockOffset + bufferResources->mLockLength );
 					bufferResources->mLockOffset = std::min( bufferResources->mLockOffset, offset );
 					bufferResources->mLockLength = highPoint - bufferResources->mLockOffset;
@@ -119,15 +119,15 @@ namespace Ogre {
 					if (length > bufferResources->mLockLength)
 						bufferResources->mLockLength = length;
 				}
-				
+
 				if (bufferResources->mLockOptions != HBL_DISCARD)
-					bufferResources->mLockOptions = options;					
+					bufferResources->mLockOptions = options;
 
 				++it;
 			}
 		}
 
-		return mSystemMemoryBuffer + offset;		
+		return mSystemMemoryBuffer + offset;
     }
 	//---------------------------------------------------------------------
 	void D3D9HardwareVertexBuffer::unlockImpl(void)
@@ -141,19 +141,19 @@ namespace Ogre {
 		{
 			BufferResources* bufferResources = it->second;
 
-			if (bufferResources->mOutOfDate && 
+			if (bufferResources->mOutOfDate &&
 				bufferResources->mBuffer != NULL&&
 				nextFrameNumber - bufferResources->mLastUsedFrame <= 1)
 				updateBufferResources(mSystemMemoryBuffer, bufferResources);
 
 			++it;
-		}			
+		}
     }
 	//---------------------------------------------------------------------
-    void D3D9HardwareVertexBuffer::readData(size_t offset, size_t length, 
+    void D3D9HardwareVertexBuffer::readData(size_t offset, size_t length,
         void* pDest)
     {
-        // There is no functional interface in D3D, just do via manual 
+        // There is no functional interface in D3D, just do via manual
         // lock, copy & unlock
         void* pSrc = this->lock(offset, length, HardwareBuffer::HBL_READ_ONLY);
         memcpy(pDest, pSrc, length);
@@ -161,20 +161,20 @@ namespace Ogre {
 
     }
 	//---------------------------------------------------------------------
-	void D3D9HardwareVertexBuffer::writeData(size_t offset, size_t length, 
+	void D3D9HardwareVertexBuffer::writeData(size_t offset, size_t length,
 		const void* pSource,
 		bool discardWholeBuffer)
 	{
-		// There is no functional interface in D3D, just do via manual 
+		// There is no functional interface in D3D, just do via manual
 		// lock, copy & unlock
-		void* pDst = this->lock(offset, length, 
+		void* pDst = this->lock(offset, length,
 			discardWholeBuffer ? HardwareBuffer::HBL_DISCARD : HardwareBuffer::HBL_NORMAL);
 		memcpy(pDst, pSource, length);
 		this->unlock();
 	}
 	//---------------------------------------------------------------------
 	void D3D9HardwareVertexBuffer::notifyOnDeviceCreate(IDirect3DDevice9* d3d9Device)
-	{			
+	{
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 
 		if (D3D9RenderSystem::getResourceManager()->getCreationPolicy() == RCP_CREATE_ON_ALL_DEVICES)
@@ -182,21 +182,21 @@ namespace Ogre {
 	}
 	//---------------------------------------------------------------------
 	void D3D9HardwareVertexBuffer::notifyOnDeviceDestroy(IDirect3DDevice9* d3d9Device)
-	{	
+	{
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 
 		DeviceToBufferResourcesIterator it = mMapDeviceToBufferResources.find(d3d9Device);
 
-		if (it != mMapDeviceToBufferResources.end())	
-		{								
+		if (it != mMapDeviceToBufferResources.end())
+		{
 			SAFE_RELEASE(it->second->mBuffer);
 			SAFE_DELETE(it->second);
 			mMapDeviceToBufferResources.erase(it);
-		}	
+		}
 	}
 	//---------------------------------------------------------------------
 	void D3D9HardwareVertexBuffer::notifyOnDeviceLost(IDirect3DDevice9* d3d9Device)
-	{	
+	{
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 
 		if (mBufferDesc.Pool == D3DPOOL_DEFAULT)
@@ -204,14 +204,14 @@ namespace Ogre {
 			DeviceToBufferResourcesIterator it = mMapDeviceToBufferResources.find(d3d9Device);
 
 			if (it != mMapDeviceToBufferResources.end())
-			{				
-				SAFE_RELEASE(it->second->mBuffer);	
-			}					
+			{
+				SAFE_RELEASE(it->second->mBuffer);
+			}
 		}
 	}
 	//---------------------------------------------------------------------
 	void D3D9HardwareVertexBuffer::notifyOnDeviceReset(IDirect3DDevice9* d3d9Device)
-	{		
+	{
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 
 		if (D3D9RenderSystem::getResourceManager()->getCreationPolicy() == RCP_CREATE_ON_ALL_DEVICES)
@@ -222,7 +222,7 @@ namespace Ogre {
 	{
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 
-		BufferResources* bufferResources;		
+		BufferResources* bufferResources;
 		HRESULT hr;
 
 		DeviceToBufferResourcesIterator it;
@@ -236,7 +236,7 @@ namespace Ogre {
 		}
 		else
 		{
-			bufferResources = new BufferResources;			
+			bufferResources = new BufferResources;
 			mMapDeviceToBufferResources[d3d9Device] = bufferResources;
 		}
 
@@ -246,11 +246,11 @@ namespace Ogre {
 		bufferResources->mLockLength = getSizeInBytes();
 		bufferResources->mLockOptions = HBL_NORMAL;
 		bufferResources->mLastUsedFrame = Root::getSingleton().getNextFrameNumber();
-		
+
 		// Create the vertex buffer
 		hr = d3d9Device->CreateVertexBuffer(
-			static_cast<UINT>(mSizeInBytes), 
-			D3D9Mappings::get(mUsage), 
+			static_cast<UINT>(mSizeInBytes),
+			D3D9Mappings::get(mUsage),
 			0, // No FVF here, thank you.
 			ePool,
 			&bufferResources->mBuffer,
@@ -258,20 +258,20 @@ namespace Ogre {
 
 		if (FAILED(hr))
 		{
-			String msg = DXGetErrorDescription(hr);
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, 
-				"Cannot restore D3D9 vertex buffer: " + msg, 
+			String msg = DXGetErrorDescription9(hr);
+			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR,
+				"Cannot restore D3D9 vertex buffer: " + msg,
 				"D3D9HardwareVertexBuffer::createBuffer");
 		}
 
 		hr = bufferResources->mBuffer->GetDesc(&mBufferDesc);
 		if (FAILED(hr))
 		{
-			String msg = DXGetErrorDescription(hr);
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, 
-				"Cannot get D3D9 Vertex buffer desc: " + msg, 
+			String msg = DXGetErrorDescription9(hr);
+			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR,
+				"Cannot get D3D9 Vertex buffer desc: " + msg,
 				"D3D9HardwareVertexBuffer::createBuffer");
-		}		
+		}
 	}
 	//---------------------------------------------------------------------
 	IDirect3DVertexBuffer9* D3D9HardwareVertexBuffer::getD3D9VertexBuffer(void)
@@ -282,11 +282,11 @@ namespace Ogre {
 		// Find the vertex buffer of this device.
 		it = mMapDeviceToBufferResources.find(d3d9Device);
 
-		// Case vertex buffer was not found for the current device -> create it.		
-		if (it == mMapDeviceToBufferResources.end() || it->second->mBuffer == NULL)		
-		{						
+		// Case vertex buffer was not found for the current device -> create it.
+		if (it == mMapDeviceToBufferResources.end() || it->second->mBuffer == NULL)
+		{
 			createBuffer(d3d9Device, mBufferDesc.Pool);
-			it = mMapDeviceToBufferResources.find(d3d9Device);			
+			it = mMapDeviceToBufferResources.find(d3d9Device);
 		}
 
 		if (it->second->mOutOfDate)
@@ -295,31 +295,31 @@ namespace Ogre {
 		it->second->mLastUsedFrame = Root::getSingleton().getNextFrameNumber();
 
 		return it->second->mBuffer;
-	}	
+	}
 	//---------------------------------------------------------------------
 	bool D3D9HardwareVertexBuffer::updateBufferResources(const char* systemMemoryBuffer,
 		BufferResources* bufferResources)
-	{		
+	{
 		assert(bufferResources != NULL);
 		assert(bufferResources->mBuffer != NULL);
 		assert(bufferResources->mOutOfDate);
-				
+
 		void* dstBytes;
 		HRESULT hr;
-		
+
 
 		// Lock the buffer.
 		hr = bufferResources->mBuffer->Lock(
-			static_cast<UINT>(bufferResources->mLockOffset), 
-			static_cast<UINT>(bufferResources->mLockLength), 
+			static_cast<UINT>(bufferResources->mLockOffset),
+			static_cast<UINT>(bufferResources->mLockLength),
 			&dstBytes,
 			D3D9Mappings::get(bufferResources->mLockOptions, mUsage));
 
 		if (FAILED(hr))
 		{
-			String msg = DXGetErrorDescription(hr);
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, 
-				"Cannot lock D3D9 vertex buffer: " + msg, 
+			String msg = DXGetErrorDescription9(hr);
+			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR,
+				"Cannot lock D3D9 vertex buffer: " + msg,
 				"D3D9HardwareVertexBuffer::updateBuffer");
 		}
 
@@ -329,9 +329,9 @@ namespace Ogre {
 		hr = bufferResources->mBuffer->Unlock();
 		if (FAILED(hr))
 		{
-			String msg = DXGetErrorDescription(hr);
-			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, 
-				"Cannot unlock D3D9 vertex buffer: " + msg, 
+			String msg = DXGetErrorDescription9(hr);
+			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR,
+				"Cannot unlock D3D9 vertex buffer: " + msg,
 				"D3D9HardwareVertexBuffer::updateBuffer");
 		}
 
@@ -340,6 +340,6 @@ namespace Ogre {
 		bufferResources->mLockLength = 0;
 		bufferResources->mLockOptions = HBL_NORMAL;
 
-		return true;		
+		return true;
 	}
 }

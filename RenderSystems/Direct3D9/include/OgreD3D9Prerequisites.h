@@ -37,7 +37,7 @@ THE SOFTWARE.
 #define OGRE_LOCK_RECURSIVE_MUTEX(name)   name.lock();
 #define OGRE_UNLOCK_RECURSIVE_MUTEX(name) name.unlock();
 #else
-#define OGRE_LOCK_RECURSIVE_MUTEX(name) 
+#define OGRE_LOCK_RECURSIVE_MUTEX(name)
 #define OGRE_UNLOCK_RECURSIVE_MUTEX(name)
 #endif
 
@@ -47,7 +47,7 @@ THE SOFTWARE.
 #define D3D9_DEVICE_ACCESS_UNLOCK			OGRE_UNLOCK_RECURSIVE_MUTEX(msDeviceAccessMutex);
 #define D3D9_DEVICE_ACCESS_CRITICAL_SECTION	OGRE_LOCK_MUTEX(msDeviceAccessMutex)
 #else
-#define D3D9_DEVICE_ACCESS_LOCK	
+#define D3D9_DEVICE_ACCESS_LOCK
 #define D3D9_DEVICE_ACCESS_UNLOCK
 #define D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 #endif
@@ -60,7 +60,7 @@ THE SOFTWARE.
 #define SAFE_DELETE_ARRAY(p) { if(p) { delete[] (p);   (p)=NULL; } }
 #define SAFE_RELEASE(p)      { if(p) { (p)->Release(); (p)=NULL; } }
 
-// enable extended d3d debug 
+// enable extended d3d debug
 #if OGRE_DEBUG_MODE
 #	define D3D_DEBUG_INFO
 #endif
@@ -71,8 +71,7 @@ THE SOFTWARE.
 #endif
 #include <d3d9.h>
 #include <d3dx9.h>
-#include <DxErr.h>
-
+#include <DxErr9.h>
 
 namespace Ogre
 {
