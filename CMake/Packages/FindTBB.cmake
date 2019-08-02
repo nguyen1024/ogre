@@ -11,7 +11,7 @@
 # Once done, this will define
 #
 #  TBB_FOUND - system has TBB
-#  TBB_INCLUDE_DIRS - the TBB include directories 
+#  TBB_INCLUDE_DIRS - the TBB include directories
 #  TBB_LIBRARIES - link these to use TBB
 
 include(FindPkgMacros)
@@ -23,8 +23,8 @@ getenv_path(TBB_ROOT)
 getenv_path(TBB_BASE)
 
 # construct search paths
-set(TBB_PREFIX_PATH 
-  ${TBB_HOME} ${ENV_TBB_HOME} 
+set(TBB_PREFIX_PATH
+  ${TBB_HOME} ${ENV_TBB_HOME}
   ${TBB_ROOT} ${ENV_TBB_ROOT}
   ${TBB_BASE} ${ENV_TBB_BASE}
 )
@@ -57,7 +57,7 @@ if (WIN32)
   if (MSVC90)
     set(COMPILER_PREFIX "vc9")
   endif ()
-  
+
   # for each prefix path, add ia32/64\${COMPILER_PREFIX}\lib to the lib search path
   foreach (dir ${TBB_PREFIX_PATH})
     if (CMAKE_CL_64)
@@ -66,6 +66,8 @@ if (WIN32)
     else ()
       list(APPEND TBB_LIB_SEARCH_PATH ${dir}/ia32/${COMPILER_PREFIX}/lib)
     endif ()
+    list(APPEND TBB_LIB_SEARCH_PATH ${dir}/windows_ia32_gcc_mingw9.1.0_debug)
+    list(APPEND TBB_LIB_SEARCH_PATH ${dir}/windows_ia32_gcc_mingw9.1.0_release)
   endforeach ()
 endif ()
 
