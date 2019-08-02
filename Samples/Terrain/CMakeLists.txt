@@ -1,5 +1,7 @@
 # Configure Terrain demo build
 
+add_compile_options(-O1)
+
 set(HEADER_FILES include/Terrain.h)
 set(SOURCE_FILES src/Terrain.cpp)
 
