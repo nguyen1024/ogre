@@ -620,6 +620,8 @@ if (OGRE_CONFIG_THREADS)
   list(APPEND LIBRARIES ${OGRE_THREAD_LIBRARIES})
 endif ()
 
+list(APPEND LIBRARIES boost_thread-mgw91-mt-1_49)
+
 if (OGRE_CONFIG_ENABLE_FREEIMAGE)
   list(APPEND HEADER_FILES include/OgreFreeImageCodec.h)
   list(APPEND SOURCE_FILES src/OgreFreeImageCodec.cpp)
