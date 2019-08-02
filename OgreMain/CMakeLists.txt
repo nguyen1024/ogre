@@ -459,7 +459,7 @@ if (WIN32)
     src/WIN32/resource.h
     src/WIN32/OgreWin32Resources.rc
     src/WIN32/winres.h
-  )  
+  )
   set(RESOURCE_FILES
     src/WIN32/resource.h
     src/WIN32/OgreWin32Resources.rc
@@ -467,8 +467,8 @@ if (WIN32)
   )
   source_group(Resources FILES ${RESOURCE_FILES})
   set(PLATFORM_HEADER_INSTALL "WIN32")
- 
-  if (MINGW) 
+
+  if (MINGW)
     # There's a bug in CMake which makes it ignore resource files with Mingw
     # This is a manual fix for the moment.
     get_filename_component(OGRE_MINGW_PATH ${CMAKE_CXX_COMPILER} PATH)
@@ -480,11 +480,11 @@ if (WIN32)
 	endif ()
 	mark_as_advanced(OGRE_MINGW_RC)
 	add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/OgreWin32Resources.rc.obj
-	  COMMAND ${OGRE_MINGW_RC} -I${CMAKE_CURRENT_SOURCE_DIR}/src/WIN32 
+	  COMMAND ${OGRE_MINGW_RC} -I${CMAKE_CURRENT_SOURCE_DIR}/src/WIN32
 	                           -i${CMAKE_CURRENT_SOURCE_DIR}/src/WIN32/OgreWin32Resources.rc
 							   -o${CMAKE_CURRENT_BINARY_DIR}/OgreWin32Resources.rc.obj
       DEPENDS ${RESOURCE_FILES})
-	list(APPEND PLATFORM_SOURCE_FILES ${CMAKE_CURRENT_BINARY_DIR}/OgreWin32Resources.rc.obj)		
+	list(APPEND PLATFORM_SOURCE_FILES ${CMAKE_CURRENT_BINARY_DIR}/OgreWin32Resources.rc.obj)
   endif ()
 
 elseif (APPLE)
@@ -608,7 +608,7 @@ endif ()
 
 
 # Add needed definitions and nedmalloc include dir
-add_definitions(-DOGRE_NONCLIENT_BUILD -DFREEIMAGE_LIB -D_MT -D_USRDLL)
+add_definitions(-DOGRE_NONCLIENT_BUILD -D_MT -D_USRDLL)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/nedmalloc)
 
 set(LIBRARIES
@@ -651,7 +651,7 @@ set (TARGET_LINK_FLAGS "")
 add_library(OgreMain ${OGRE_LIB_TYPE} ${PREC_HEADER} ${HEADER_FILES} ${SOURCE_FILES} ${PLATFORM_HEADER_FILES} ${PLATFORM_SOURCE_FILES} ${THREAD_HEADER_FILES} ${THREAD_SOURCE_FILES})
 # In visual studio 2010 - 64 bit we get this error: "LINK : fatal error LNK1210: exceeded internal ILK size limit; link with /INCREMENTAL:NO"
 if(WIN32 AND MSVC10 AND CMAKE_CL_64)
-  set_target_properties(OgreMain PROPERTIES 
+  set_target_properties(OgreMain PROPERTIES
                         VERSION ${OGRE_SOVERSION}
                         LINK_FLAGS "/INCREMENTAL:NO"
                       )
@@ -677,7 +677,7 @@ if (APPLE)
       COMMAND mkdir ARGS -p ${OGRE_BINARY_DIR}/lib/$(CONFIGURATION)/Ogre.framework/Headers/Threading
 	  COMMAND /Developer/Library/PrivateFrameworks/DevToolsCore.framework/Resources/pbxcp ARGS -exclude .DS_Store -exclude .hg -exclude 'CMakeLists.txt' -resolve-src-symlinks ${OGRE_SOURCE_DIR}/OgreMain/include/Threading/* ${OGRE_BINARY_DIR}/lib/$(CONFIGURATION)/Ogre.framework/Headers/Threading/
       COMMAND mkdir ARGS -p ${OGRE_BINARY_DIR}/lib/$(CONFIGURATION)/Ogre.framework/Headers/OSX
-      COMMAND /Developer/Library/PrivateFrameworks/DevToolsCore.framework/Resources/pbxcp ARGS -exclude .DS_Store -exclude .hg -exclude 'CMakeLists.txt' -resolve-src-symlinks ${OGRE_SOURCE_DIR}/OgreMain/include/OSX/*.h ${OGRE_BINARY_DIR}/lib/$(CONFIGURATION)/Ogre.framework/Headers/OSX/	
+      COMMAND /Developer/Library/PrivateFrameworks/DevToolsCore.framework/Resources/pbxcp ARGS -exclude .DS_Store -exclude .hg -exclude 'CMakeLists.txt' -resolve-src-symlinks ${OGRE_SOURCE_DIR}/OgreMain/include/OSX/*.h ${OGRE_BINARY_DIR}/lib/$(CONFIGURATION)/Ogre.framework/Headers/OSX/
 	)
   else ()
     set_target_properties(OgreMain PROPERTIES INSTALL_NAME_DIR "OGRE")
@@ -697,7 +697,7 @@ if (MINGW)
 endif ()
 
 # specify a precompiled header to use
-use_precompiled_header(OgreMain 
+use_precompiled_header(OgreMain
   "${CMAKE_CURRENT_SOURCE_DIR}/include/OgreStableHeaders.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/src/OgrePrecompiledHeaders.cpp"
 )
